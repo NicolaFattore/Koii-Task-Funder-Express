@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import fs from 'fs';
 import path from 'path';
 import logger from '../src/config/logger';
@@ -28,20 +28,21 @@ describe('Logger Configuration', () => {
 
   // Test logging methods
   it('should log messages', () => {
-    // Capture console output
-    const originalConsoleLog = console.log;
-    const logs: string[] = [];
-    console.log = (...args) => logs.push(args.join(' '));
+    // Mock console methods to verify logging
+    const consoleSpy = vi.spyOn(console, 'log');
+    const consoleErrorSpy = vi.spyOn(console, 'error');
 
     // Log test messages
     logger.info('Test info message');
     logger.error('Test error message');
     logger.warn('Test warning message');
 
-    // Restore console.log
-    console.log = originalConsoleLog;
+    // Check if log methods were called
+    expect(consoleSpy).toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
 
-    // Check if logs were generated
-    expect(logs.length).toBeGreaterThan(0);
+    // Restore spies
+    consoleSpy.mockRestore();
+    consoleErrorSpy.mockRestore();
   });
 });
