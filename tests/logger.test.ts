@@ -27,10 +27,14 @@ describe('Logger Configuration', () => {
   });
 
   // Test logging methods
-  it('should log messages', () => {
-    // Mock console methods to verify logging
-    const consoleSpy = vi.spyOn(console, 'log');
-    const consoleErrorSpy = vi.spyOn(console, 'error');
+  it('should support various log levels', () => {
+    // Mock Winston transports to verify logging
+    const transportMock = {
+      log: vi.fn()
+    };
+
+    // Temporarily add mock transport
+    logger.add(transportMock);
 
     // Log test messages
     logger.info('Test info message');
@@ -38,11 +42,9 @@ describe('Logger Configuration', () => {
     logger.warn('Test warning message');
 
     // Check if log methods were called
-    expect(consoleSpy).toHaveBeenCalled();
-    expect(consoleErrorSpy).toHaveBeenCalled();
+    expect(transportMock.log).toHaveBeenCalledTimes(3);
 
-    // Restore spies
-    consoleSpy.mockRestore();
-    consoleErrorSpy.mockRestore();
+    // Remove mock transport
+    logger.remove(transportMock);
   });
 });
